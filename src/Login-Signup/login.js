@@ -1,24 +1,70 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Input from "./Input";
+// import {getDocs,collection} from "firebase/firestore"
+import Input from "../Input";
+// import {db} from "./firebase-config"
+import { useDispatch } from "react-redux";
+import { login } from "./loginSignupSlice";
 
 const Login = () => {
   const [loginInputs, setLoginInputs] = useState({
     email: "",
     password: "",
   });
+  // const [userDbData,setUsersDbData] = useState([])
   const { email, password } = loginInputs;
+  const navigate = useNavigate();
+
+  // const firestoreDataRef = collection(db, "users");
+
+  // useEffect(() => {
+  //   const getUsers = async () => {
+  //     const data = await getDocs(firestoreDataRef);
+  //     setUsersDbData(data.docs.map(item=>({...item.data()})))
+  //   };
+  //   getUsers();
+  // });
+
 
   const setValues = (e) => {
     setLoginInputs({
-      ...loginInputs,[e.target.name]:e.target.value
-    })
+      ...loginInputs,
+      [e.target.name]: e.target.value,
+    });
   };
+
+  const dispatch = useDispatch();
 
   const doSubmit = (e) => {
     e.preventDefault();
-    console.log(loginInputs)
-  }
+    // console.log(userDbData )
+
+    dispatch(
+      login({
+        email,
+        password
+      })
+    );
+    const dbData = JSON.parse(localStorage.getItem("User"));
+
+    if (dbData === null || dbData.every(val => val.email!== email)) {
+      alert("We cannot find the user? Please signup and try again");
+      navigate("/signup")
+      return;
+    }else if (dbData.map(user => {
+      if (user.email === email){
+        if (user.password !== password){
+          alert("Incorrect password. Please try again...");
+        }else{
+          navigate("/dashboard")
+          console.log("User Logged in successfully")
+        }
+      }
+      return null;
+    })) {
+      return null ;
+    }
+  };
 
   const css =
     "border rounded border-current h-3/5 mb-2 w-full p-1.5 hover:bg-slate-200";
@@ -49,7 +95,7 @@ const Login = () => {
           name="password"
         />
         <button
-          type = "submit" 
+          type="submit"
           className="loginBtn hover:bg-indigo-900 bg-blue-600 text-white p-2 rounded mb-1 w-20 mt-2"
         >
           Login
