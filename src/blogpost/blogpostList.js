@@ -29,9 +29,9 @@ const BlogPost = () => {
   }
 
   return (
-    <div className="h-screen flex justify-center items-center bg-slate-800">
-      <section className="bg-white w-2/5 flex flex-col items-center rounded-md shadow-2xl p-5 h-5/6 overflow-scroll">
-        <h1 className="mb-5 font-bold text-5xl font-serif">Posts</h1>
+    <div className="h-screen flex justify-center items-center bg-gradient-to-r from-slate-300">
+      <section className="bg-white w-2/5 flex flex-col items-center rounded-2xl ring ring-4 ring-offset-black ring-offset-4 ring-zinc-600 shadow-2xl p-5 h-5/6 overflow-scroll">
+        <h1 className="mb-5 font-bold text-5xl font-serif shadow-md">Posts</h1>
         <AddForm />
         <div className="w-3/4">{content}</div>
       </section>

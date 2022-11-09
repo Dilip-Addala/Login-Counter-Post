@@ -17,7 +17,7 @@ const SuccessFetchPost = ({ post }) => {
   }
 
   return (
-    <article key={post.id} className="border-4 mb-2 rounded p-4 text-xl ">
+    <article key={post.id} className="border-4 mb-2 rounded-xl p-4 text-xl bg-slate-100">
       <div className="flex justify-between items-center mb-2 break-all">
         <div className="overflow-hidden w-80">
           <h2 className="font-extrabold text-amber-700 font-serif text-2xl">
