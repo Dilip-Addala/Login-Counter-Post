@@ -10,8 +10,6 @@ const BlogPost = () => {
   const getPostStatus = useSelector(postStatus);
   const getPostError = useSelector(postError)
 
-  // console.log(posts);
-
   const dispatch = useDispatch();
 
   useEffect(() => {

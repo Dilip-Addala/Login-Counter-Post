@@ -1,26 +1,29 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "./postSlice";
 import { nanoid } from "@reduxjs/toolkit";
 import Input from "../Input";
-
-const options = [
-  { id: 0, name: "Unknown" },
-  { id: 1, name: "Gosel" },
-  { id: 2, name: "Rafiq" },
-  { id: 3, name: "Abhishek" },
-];
+import { postUsersList } from "../users/usersSlice";
 
 const AddForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [author, setAuthor] = useState(options[0].name);
+
+  const postUsers = useSelector(postUsersList);
+
+  let name;
+  if (postUsers.length !== 0) {
+    name = postUsers[0].name;
+  }
+  const [author, setAuthor] = useState(name);
+
+  let getUserIdByName;
+  const selectUser = postUsers.find((user) => user.name === author);
+  if (selectUser) {
+    getUserIdByName = selectUser.id;
+  }
 
   const dispatch = useDispatch();
-
-  const classStyle = "mb-2 h-10 p-3 text-xl bg-slate-200";
-
-  const emptyInputsCheck = title === "" || description === "";
 
   const submitPost = (e) => {
     e.preventDefault();
@@ -29,9 +32,10 @@ const AddForm = () => {
         addPost({
           id: nanoid(),
           title,
-          description,
-          author,
-          time:new Date().toISOString(),reactions: {
+          body: description,
+          userId: getUserIdByName,
+          time: new Date().toISOString(),
+          reactions: {
             thumbsup: 0,
             loveIt: 0,
             laugh: 0,
@@ -45,36 +49,56 @@ const AddForm = () => {
     }
   };
 
+  const emptyInputsCheck = title === "" || description === "";
+
   const btnBgColor = emptyInputsCheck ? "bg-slate-300" : "bg-blue-600";
+
+  const inputStyle =
+    "mb-2 h-14 p-3 text-xl bg-slate-200 border border-yellow-500";
 
   return (
     <form className="flex flex-col w-3/4" onSubmit={submitPost}>
+      <label htmlFor="title" className="text-xl font-semibold text-gray-400">
+        Title
+      </label>
       <Input
+        id="title"
         value={title}
         type="text"
         placeholder="Enter Title"
-        className={classStyle}
+        className={inputStyle}
         onChange={(e) => setTitle(e.target.value)}
       />
+      <label
+        htmlFor="description"
+        className="text-xl font-semibold text-gray-400"
+      >
+        Description
+      </label>
       <Input
+        id="description"
         value={description}
         type="text"
         placeholder="Enter Description"
-        className={classStyle}
+        className={inputStyle}
         onChange={(e) => setDescription(e.target.value)}
       />
+      <label htmlFor="author" className="text-xl font-semibold text-gray-400">
+        Author
+      </label>
       <select
+        id="author"
         value={author}
-        className={`h-14 ${classStyle}`}
+        className={`h-14 ${inputStyle}`}
         onChange={(e) => setAuthor(e.target.value)}
       >
-        {options.map((option) => (
+        {postUsers.map((option) => (
           <option key={option.id}>{option.name}</option>
         ))}
       </select>
       <button
         type="submit"
-        className={`${btnBgColor} p-3 font-semibold text-xl text-white mb-10 border-none rounded-md shadow-md`}
+        className={`${btnBgColor} p-3 mt-3 font-semibold text-xl text-white mb-10 border-none rounded-md shadow-md ring-2 ring-offset-1`}
         disabled={emptyInputsCheck}
       >
         Add post
