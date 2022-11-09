@@ -4,7 +4,6 @@ import AddForm from "./addForm";
 import SuccessFetchPost from "./successFetchPost";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { isFulfilled } from "@reduxjs/toolkit";
 
 const BlogPost = () => {
   const posts = useSelector(allPosts);
@@ -14,23 +13,18 @@ const BlogPost = () => {
   // console.log(posts);
 
   const dispatch = useDispatch();
-  console.log(posts);
 
   useEffect(() => {
     if (getPostStatus === "idle") {
       dispatch(fetchPosts());
-      // const {value} = psList 
-      // console.log(value)
     }
   }, [getPostStatus, dispatch]);
 
-  console.log(getPostStatus);
   let content;
 
   if (getPostStatus === "loading") {
     content = <p>Loading...</p>;
-  } else if (getPostStatus === "fulfilled") {
-    // console.log(posts);
+  } else if (getPostStatus === "succeeded") {
     content = posts.map((post) => <SuccessFetchPost key={post.id} post={post} />);
   } else if (getPostStatus === "rejected") {
     content = <p>{getPostError}</p>;

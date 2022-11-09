@@ -15,9 +15,7 @@ const initialState = {
 export const fetchPosts = createAsyncThunk("posts/fetchPosts",async()=>{
   try{
     const response = await axios.get(postsUrl);
-    // // console.log(response.data)
-    // initialState.posts = response.data
-    return [...response.data]
+    return response.data
   }
   catch(error){
     return error.message
@@ -69,7 +67,8 @@ export const PostSlice = createSlice({
       const {postId} = action.payload
       // const updatesPostsList = state.postsList.filter(post => post.id !== postId)
       const updatesPostsList = state.posts.filter(post => post.id !== postId)
-      state.postsList = updatesPostsList
+      // state.postsList = updatesPostsList
+      state.posts = updatesPostsList
     },
     addReactions: (state, action) => {
       const { postId, reaction } = action.payload;
@@ -78,38 +77,35 @@ export const PostSlice = createSlice({
       if (selectedPost) {
         selectedPost.reactions[reaction]++;
       }
-    },
-    extraReducers(builder){
-      builder
-      .addCase(fetchPosts.pending,(state)=>{
-        console.log("pending triggered")
-        state.status = 'loading'
-      })
-      .addCase(fetchPosts.fulfilled,(state,action)=>{
-        console.log(action.payload)
-        state.status = "succeeded"
-        
-        let min = 1;
-        const loadedPost = action.payload.map(post=>{
-          post.time = sub(new Date(),{minutes:min++}).toISOString();
-          post.reactions = {
-                  thumbsup: 0,
-                  loveIt: 0,
-                  laugh: 0,
-                  fear: 0,
-                  shock: 0,
-                }
-          return post
-        })
-        state.posts.push(loadedPost)
-        // state.posts = state.posts.concat(loadedPost)
-      })
-      .addCase(fetchPosts.rejected,(state,action)=>{
-        state.status = "failure"
-        state.errMsg = action.error.message
-      })
     }
   },
+  extraReducers(builder){
+    builder
+    .addCase(fetchPosts.pending,(state)=>{
+      state.status = 'loading'
+    })
+    .addCase(fetchPosts.fulfilled,(state,action)=>{
+      state.status = "succeeded"
+      
+      let min = 1;
+      const loadedPost = action.payload.map(post=>{
+        post.time = sub(new Date(),{minutes:min++}).toISOString();
+        post.reactions = {
+                thumbsup: 0,
+                loveIt: 0,
+                laugh: 0,
+                fear: 0,
+                shock: 0,
+              }
+        return post
+      })
+      state.posts = loadedPost
+    })
+    .addCase(fetchPosts.rejected,(state,action)=>{
+      state.status = "failure"
+      state.errMsg = action.error.message
+    })
+  }
 });
 
 // export const allPosts = (state) => state.posts.postsList;
